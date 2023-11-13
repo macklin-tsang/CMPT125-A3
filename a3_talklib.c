@@ -53,23 +53,26 @@ void clearTalk(Talk* talk) {
 // if items at indexes 2, 4, 6 contain the input as substring, the array would be {2, 4, 6, -1}
 int* lookupTalkByTitle(Talk **array, int size, const char* title){
     int trackIndex = 0;
-    int* matches = malloc((sizeof(int)*size+1));
-    if (matches == NULL) {
+    // malloc size + 1 for extra space regarding the last item
+    int* matches = malloc((sizeof(int)*size+1)); 
+    if (matches == NULL) { // Check for successfull allocation
         printf("Failed to allocate.\n");
         return NULL;
     }
-
+    // Store matched indices found in comparison of our search string and title
     for (int i = 0; i < size; i++){
         if (strstr(array[i]->title, title) != NULL){
             matches[trackIndex] = i;
             trackIndex++;
         }
     }
-
-    matches[trackIndex] = -1;
-
+    // If we find nothing, we return NULL.
+    // Otherwise, we make our last item -1.
     if (trackIndex == 0){
+        free(matches);
         return NULL;
+    } else {
+        matches[trackIndex] = -1;
     }
     
     return matches;
@@ -77,6 +80,9 @@ int* lookupTalkByTitle(Talk **array, int size, const char* title){
 
 //helper function for qsort to compare talks by duration
 int compareTalksByDuration(const void *p1, const void *p2){
+    // cast p1 from void to Talk** pointer, then dereference to Talk*
+    // compare difference in respective time units, 
+    // if the time units are the same, compare the next respective time units
 	Talk* talk1 = *(Talk**)p1;
 	Talk* talk2 = *(Talk**)p2;
 
@@ -92,7 +98,9 @@ int compareTalksByDuration(const void *p1, const void *p2){
 
 //helper function for qsort to compare talks by title (Cstring)
 int compareTalksByTitle(const void *p1, const void *p2){
-	Talk* talk1 = *(Talk**)p1;
+    // cast p1 from void to Talk** pointer, then dereference to Talk*
+    // compares titles together by string values
+	Talk* talk1 = *(Talk**)p1; 
 	Talk* talk2 = *(Talk**)p2;
 	return(strcmp(talk1->title , talk2->title));
 }
@@ -101,7 +109,7 @@ Talk** loadTalksFile(char* filename, int* count){
     FILE* filePtr = fopen(filename, "r");
     // Check if the file can be opened successfully
     if (filePtr == NULL) {
-        printf("Failed to open.\n");
+        printf("Error in opening the file, check if it is available.\n");
         return NULL;
     }
 
@@ -187,7 +195,9 @@ Talk** loadTalksFile(char* filename, int* count){
 
 void displayEntries(Talk** talk, int used){
 	for (int i = 0; i < used; i++){
-        printf("Talk #%d\n", i+1); // since talk is 0-indexed, talk # start at 1
+        // since talk is 0-indexed, talk # start at 1
+        // display each index and its respective details
+        printf("Talk #%d\n", i+1); 
         printf("%hdh%hdm%hds\n%s\n%s", talk[i]->hours, talk[i]->minutes, 
         talk[i]->seconds, talk[i]->title, talk[i]->overview);
         printf("==========================================================\n");
@@ -195,14 +205,16 @@ void displayEntries(Talk** talk, int used){
 }
 
 void displaySearchResults(Talk** talk, int* searchMatches){
-    // find a better way to do this
     int tracker = 0;
-    
+    int searchIndex = searchMatches[tracker];
+
     while (searchMatches[tracker] != -1){
-        int searchIndex = searchMatches[tracker];
+        // In our array of indices that match, 
+        // Display each matching index respectively, until we reach the end.
         printf("Talk #%d\n", tracker+1);
-        printf("%hdh%hdm%hds\n%s\n%s", talk[searchIndex]->hours, talk[searchIndex]->minutes, 
-        talk[searchIndex]->seconds, talk[searchIndex]->title, talk[searchIndex]->overview);
+        printf("%hdh%hdm%hds\n%s\n%s", talk[searchIndex]->hours, 
+        talk[searchIndex]->minutes, talk[searchIndex]->seconds, 
+        talk[searchIndex]->title, talk[searchIndex]->overview);
         printf("==========================================================\n");
         tracker++;
     }
