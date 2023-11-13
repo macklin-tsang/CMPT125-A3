@@ -34,7 +34,7 @@ int main() {
 
     int option;
     int count;
-    char filename[300];
+    char filename[51];
     char searchBar[51];
     Talk** talks = NULL;
     int* searchMatches = NULL;
@@ -43,56 +43,74 @@ int main() {
     
     printBanner();
 
+    // prompt user for their option choice
+
     scanf("%d", &option);
 
     switch(option) {
-        default:
+        default: // if user choice does not match any case
             printf("Please enter a valid option.\n");
             break;
-        case 1:
-            if (talks!=NULL){fullClear(talks, count);}
+        case 1: // Case for loading talk file
+
             printf("Enter the full name of the talks file (with extensions): ");
             scanf("%s", filename);
+
             talks = loadTalksFile(filename, &count);
+            
             break;
-        case 2:
-            if (talks == NULL){
-                printf("No talks file have been loaded, please load a file.");
+
+        case 2: // Case for listing talks sorted by duration
+
+            if (talks == NULL){ // prevention of unloaded talk file
+                printf("No talks file have been loaded, please load a file.\n");
             } else {
                 qsort(talks, count, sizeof(Talk*), compareTalksByDuration);
                 displayEntries(talks, count);
             }
             break;
-        case 3:
-            if (talks == NULL){
-                printf("No talks file have been loaded, please load a file.");
+
+        case 3: // Case for listing talks sorted by title
+
+            if (talks == NULL){ // prevention of unloaded talk file
+                printf("No talks file have been loaded, please load a file.\n");
             } else {
                 qsort(talks, count, sizeof(Talk*), compareTalksByTitle);
                 displayEntries(talks, count);
             }
             break;
-        case 4:
-            if (talks == NULL){
-                printf("No talks file have been loaded, please load a file.");
+
+        case 4: // Case for looking up a talk
+
+            if (talks == NULL){ // prevention of unloaded talk file
+                printf("No talks file have been loaded, please load a file.\n");
             } else {
-                printf("What is the title of the talk, enter in part or as a whole (50 character max.)? ");
-                scanf(" %[^\n]", searchBar);
+                printf("What is the title of the talk, "
+                "enter in part or as a whole (50 character max.)? ");
+                scanf(" %[^\n]", searchBar); // read user input until newline
+
                 searchMatches = lookupTalkByTitle(talks, count, searchBar);
+
                 if (searchMatches == NULL){
-                    printf("No matches found.\n");
+                    printf("No such talk on record.\n");
                     }
                 else {
                     displaySearchResults(talks, searchMatches);
                     free(searchMatches);
                     }
+                
             }
             break;
-        case 5:
-            if (talks!=NULL){
+        case 5: // Case for terminating the program
+            printf("Thank you for using this program!\n");
+
+            if (talks!=NULL){ // Ensure we free everything before termination
                 fullClear(talks, count);
             }
             break;
+
         }
+
     } while(option != 5);
         
     return 0;
