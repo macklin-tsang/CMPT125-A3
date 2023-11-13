@@ -53,6 +53,10 @@ int main() {
             break;
         case 1: // Case for loading talk file
 
+            if (talks != NULL){
+                fullClear(talks, count);
+            }
+
             printf("Enter the full name of the talks file (with extensions): ");
             scanf("%s", filename);
 
