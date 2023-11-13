@@ -52,8 +52,7 @@ int main() {
             printf("Please enter a valid option.\n");
             break;
         case 1: // Case for loading talk file
-
-            if (talks != NULL){
+            if (talks != NULL){ // Clean out talks array if used previously
                 fullClear(talks, count);
             }
 
